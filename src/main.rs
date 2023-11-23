@@ -1,3 +1,4 @@
+use std::ptr::write;
 use regex::Regex;
 
 fn main() {
@@ -8,6 +9,8 @@ fn main() {
             )$").unwrap();
    let route: &str = "/foi/33";
    let cap = re.captures(route).unwrap();
+   let cap_names = re.capture_names();
+   dbg!(cap_names);
    dbg!(&cap);
    for c in cap.iter().skip(1) {
       if c.is_some() {
