@@ -1,5 +1,4 @@
-use std::ptr::write;
-use regex::Regex;
+use regex_lite::Regex;
 
 fn main() {
    let re = Regex::new(r"(?x)^(?:
