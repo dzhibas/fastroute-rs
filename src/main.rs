@@ -1,7 +1,12 @@
-use regex_lite::Regex;
+use regex::Regex;
 
 fn main() {
-   let re = Regex::new(r"(?x)^(?:
+   /// idea is to build one single regex pattern 
+   /// and find route in one shot
+   ///
+   /// we need to compare it with axum-router, RegexSet as both of them regex based
+   /// and fo speed check with matchit as that one fastest
+   let re = Regex::new(r"(?sxm)^(?:
                 (?<r1>/foo/([^/]+)/(\d+))
               | (?<r2>/bar/(?<id>\d+))
               | (?<r3>/foi/([^/]+))
