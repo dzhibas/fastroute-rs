@@ -184,12 +184,22 @@ fn build_route_regex<'a>(paths: impl IntoIterator<Item = &'a str>) -> String {
 fn compare_routers(c: &mut Criterion) {
     let mut group = c.benchmark_group("Compare Routers");
 
-    let z = build_route_regex(register!(regex));
-    let re = regex::Regex::new(&z).unwrap();
-    group.bench_function("fastroute-rs", |b| {
+    let regex_str = build_route_regex(register!(regex));
+
+    let re = regex::Regex::new(&regex_str).unwrap();
+    group.bench_function("fastroute-rs-regex", |b| {
         b.iter(|| {
             for route in black_box(call()) {
                 black_box(re.captures(&route).unwrap());
+            }
+        });
+    });
+
+    let re_lite = regex_lite::Regex::new(&regex_str).unwrap();
+    group.bench_function("fastroute-rs-regext_lite", |b| {
+        b.iter(|| {
+            for route in black_box(call()) {
+                black_box(re_lite.captures(&route).unwrap());
             }
         });
     });
@@ -213,6 +223,18 @@ fn compare_routers(c: &mut Criterion) {
             for route in call() {
                 let mut path = actix_router::Path::new(route);
                 black_box(actix.recognize(&mut path).unwrap());
+            }
+        });
+    });
+
+    let mut matchit = matchit::Router::new();
+    for route in register!(colon) {
+        matchit.insert(route, true).unwrap();
+    }
+    group.bench_function("matchit", |b| {
+        b.iter(|| {
+            for route in black_box(call()) {
+                black_box(matchit.at(route).unwrap());
             }
         });
     });
